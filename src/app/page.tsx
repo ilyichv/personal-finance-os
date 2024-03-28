@@ -1,68 +1,177 @@
-import Link from "next/link";
-
-import { CreatePost } from "~/app/_components/create-post";
 import { api } from "~/trpc/server";
-import { UserButton } from "@clerk/nextjs";
+import { Button } from "~/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import { Calendar } from "~/components/ui/calendar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import {
+  ArrowDownIcon,
+  ArrowLeftIcon,
+  ArrowUpIcon,
+  CalendarClockIcon,
+} from "lucide-react";
+import {
+  CurvedlineChart,
+  FilledtimeseriesChart,
+} from "~/components/dashboard/placeholders";
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
-          </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
+    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+      <div className="flex items-center gap-4">
+        <Button size="icon" variant="outline">
+          <ArrowLeftIcon className="h-4 w-4" />
+          <span className="sr-only">Back</span>
+        </Button>
+        <h1 className="text-lg font-semibold md:text-xl">Home</h1>
+        <div className="ml-auto flex items-center gap-2">
+          <Button className="hidden sm:flex" variant="outline">
+            Today
+          </Button>
+          <Button className="hidden md:flex" variant="outline">
+            This Month
+          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                className="w-[280px] justify-start text-left font-normal"
+                id="date"
+                variant="outline"
+              >
+                <CalendarClockIcon className="mr-2 h-4 w-4" />
+                June 01, 2023 - June 30, 2023
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-auto p-0">
+              <Calendar initialFocus mode="range" numberOfMonths={2} />
+            </PopoverContent>
+          </Popover>
         </div>
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-2xl text-white">
-            {hello ? hello.greeting : "Loading tRPC query..."}
-          </p>
-        </div>
-
-        <CrudShowcase />
       </div>
-
-      <UserButton />
+      <div className="grid gap-6">
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardDescription>Net Sales</CardDescription>
+              <CardTitle>$2389.00</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CurvedlineChart className="aspect-[2/1]" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardDescription>Gross Profit</CardDescription>
+              <CardTitle>$1454.00</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FilledtimeseriesChart className="aspect-[2/1]" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardDescription>Gross Margin</CardDescription>
+              <CardTitle>$986.00</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CurvedlineChart className="aspect-[2/1]" />
+            </CardContent>
+          </Card>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardDescription>Income</CardDescription>
+              <CardTitle>$2389.00</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CurvedlineChart className="aspect-[4/3]" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardDescription>Expenses</CardDescription>
+              <CardTitle>$1454.00</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FilledtimeseriesChart className="aspect-[4/3]" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardDescription>Savings</CardDescription>
+              <CardTitle>$986.00</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CurvedlineChart className="aspect-[4/3]" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardDescription>Investments</CardDescription>
+              <CardTitle>$986.00</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CurvedlineChart className="aspect-[4/3]" />
+            </CardContent>
+          </Card>
+        </div>
+        <Card>
+          <CardHeader>
+            <CardDescription>Transactions</CardDescription>
+            <CardTitle>Recent Transactions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between border-b py-2 last:pb-2">
+              <div className="flex items-center gap-4">
+                <ArrowDownIcon className="text-green-500 dark:text-green-500" />
+                <div className="flex flex-col leading-none">
+                  <div className="font-medium">Netflix</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Entertainment
+                  </div>
+                </div>
+              </div>
+              <div className="font-medium">$14.99</div>
+            </div>
+            <div className="flex items-center justify-between border-b py-2 last:pb-2">
+              <div className="flex items-center gap-4">
+                <ArrowUpIcon className="text-blue-500 dark:text-blue-500" />
+                <div className="flex flex-col leading-none">
+                  <div className="font-medium">Deposit</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Income
+                  </div>
+                </div>
+              </div>
+              <div className="font-medium">$500.00</div>
+            </div>
+            <div className="flex items-center justify-between border-b py-2 last:pb-2">
+              <div className="flex items-center gap-4">
+                <ArrowUpIcon className="text-blue-500 dark:text-blue-500" />
+                <div className="flex flex-col leading-none">
+                  <div className="font-medium">Salary</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Income
+                  </div>
+                </div>
+              </div>
+              <div className="font-medium">$2500.00</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </main>
-  );
-}
-
-async function CrudShowcase() {
-  const latestPost = await api.post.getLatest();
-
-  return (
-    <div className="w-full max-w-xs">
-      {latestPost ? (
-        <p className="truncate">Your most recent post: {latestPost.name}</p>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
-
-      <CreatePost />
-    </div>
   );
 }
