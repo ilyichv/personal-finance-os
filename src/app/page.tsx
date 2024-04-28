@@ -25,8 +25,6 @@ import {
 } from "~/components/dashboard/placeholders";
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
       <div className="flex items-center gap-4">

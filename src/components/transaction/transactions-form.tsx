@@ -1,4 +1,7 @@
+"use client";
+
 import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMediaQuery } from "~/hooks/use-media-query";
 import {
   Dialog,
@@ -18,7 +21,6 @@ import {
   DrawerTrigger,
 } from "~/components/ui/drawer";
 import { cn } from "~/lib/utils";
-import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import {
   Select,
@@ -28,8 +30,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { type Category, transactionInsertSchema } from "~/server/db/schema";
+import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { type z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+import { toast } from "sonner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import { format } from "date-fns/format";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "~/components/ui/calendar";
 
-export function TransactionFormDialog() {
+export function TransactionFormDialog({
+  categories,
+}: {
+  categories: Category[];
+}) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -43,7 +71,7 @@ export function TransactionFormDialog() {
           <DialogHeader>
             <DialogTitle>Add Transaction</DialogTitle>
           </DialogHeader>
-          <TransactionForm />
+          <TransactionForm onOpenChange={setOpen} categories={categories} />
         </DialogContent>
       </Dialog>
     );
@@ -58,7 +86,11 @@ export function TransactionFormDialog() {
         <DrawerHeader className="text-left">
           <DrawerTitle>Add Transaction</DrawerTitle>
         </DrawerHeader>
-        <TransactionForm className="px-4" />
+        <TransactionForm
+          onOpenChange={setOpen}
+          className="px-4"
+          categories={categories}
+        />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
@@ -69,42 +101,178 @@ export function TransactionFormDialog() {
   );
 }
 
-function TransactionForm({ className }: React.ComponentProps<"form">) {
+function TransactionForm({
+  className,
+  categories,
+  onOpenChange,
+}: React.ComponentProps<"form"> & {
+  categories: Category[];
+  onOpenChange: (open: boolean) => void;
+}) {
+  const router = useRouter();
+  const form = useForm<z.infer<typeof transactionInsertSchema>>({
+    resolver: zodResolver(transactionInsertSchema),
+    defaultValues: {
+      type: "outcome",
+      date: new Date(),
+    },
+  });
+
+  const createTransaction = api.transaction.create.useMutation({
+    onSuccess: () => {
+      toast.success("Transaction created");
+      router.refresh();
+      onOpenChange(false);
+      form.reset();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+  const onSubmit = (data: z.infer<typeof transactionInsertSchema>) => {
+    createTransaction.mutate(data);
+  };
+
   return (
-    <form className={cn("grid items-start gap-4", className)}>
-      <div className="my-2 space-y-4">
-        <div className="flex flex-col gap-2">
-          <Label className="sm:col-span-1" htmlFor="name">
-            Name
-          </Label>
-          <Input id="name" placeholder="Shopping" required />
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={cn("grid items-start gap-4", className)}
+      >
+        <div className="my-2 space-y-4">
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Type</FormLabel>
+                <Select
+                  defaultValue={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="outcome">Outcome</SelectItem>
+                    <SelectItem value="income">Income</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+            name="type"
+          />
+          <FormField
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Shopping" {...field} />
+                </FormControl>{" "}
+                <FormMessage />
+              </FormItem>
+            )}
+            name="name"
+          />
+          <FormField
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <Select
+                  onValueChange={(value) => field.onChange(parseInt(value, 10))}
+                  defaultValue={field.value?.toString()}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      {categories.map((category) => (
+                        <SelectItem
+                          key={category.id}
+                          value={category.id.toString()}
+                        >
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+            name="categoryId"
+          />
+
+          <FormField
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Amount</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(event) =>
+                      field.onChange(parseFloat(event.target.value))
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+            name="amount"
+          />
         </div>
-        <div className="flex flex-col gap-2">
-          <Label className="sm:col-span-1" htmlFor="name">
-            Type
-          </Label>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="clothing">Clothing</SelectItem>
-                <SelectItem value="food">Food</SelectItem>
-                <SelectItem value="entertainment">Entertainment</SelectItem>
-                <SelectItem value="transportation">Transportation</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label className="sm:col-span-1" htmlFor="amount">
-            Amount
-          </Label>
-          <Input id="amount" placeholder="25.00" required />
-        </div>
-      </div>
-      <Button type="submit">Save changes</Button>
-    </form>
+        <Button type="submit">Save changes</Button>
+      </form>
+    </Form>
   );
 }

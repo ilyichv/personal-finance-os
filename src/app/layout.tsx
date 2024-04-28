@@ -7,6 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { Sidebar } from "~/components/common/sidebar";
 import { Header } from "~/components/common/header";
+import { Toaster } from "~/components/ui/sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,7 +20,7 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -37,6 +38,7 @@ export default function RootLayout({
               </div>
             </div>
           </TRPCReactProvider>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
