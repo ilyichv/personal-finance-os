@@ -40,7 +40,7 @@ export const posts = createTable(
 
 export const categories = createTable("category", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 256 }),
+  name: varchar("name", { length: 256 }).notNull(),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -59,7 +59,7 @@ export const transactions = createTable("transaction", {
   type: varchar("type", { enum: ["income", "outcome"] })
     .notNull()
     .default("outcome"),
-  categoryId: integer("category_id").notNull(),
+  categoryId: integer("category_id"),
   amount: doublePrecision("amount").notNull(),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
@@ -74,3 +74,5 @@ export const transactionRelations = relations(transactions, ({ one }) => ({
 }));
 
 export const transactionInsertSchema = createInsertSchema(transactions);
+
+export type Transaction = typeof transactions.$inferSelect;

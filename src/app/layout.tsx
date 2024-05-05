@@ -30,13 +30,13 @@ export default async function RootLayout({
       <html lang="en">
         <body className={cn("font-sans", inter.variable)}>
           <TRPCReactProvider>
-            <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
+            <main className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
               <Sidebar />
-              <div className="flex flex-col">
+              <div className="flex min-h-screen flex-col">
                 <Header />
                 {children}
               </div>
-            </div>
+            </main>
           </TRPCReactProvider>
           <Toaster />
         </body>

@@ -1,4 +1,3 @@
-import { api } from "~/trpc/server";
 import { Button } from "~/components/ui/button";
 import {
   Popover,
@@ -26,7 +25,7 @@ import {
 
 export default async function Home() {
   return (
-    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+    <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
       <div className="flex items-center gap-4">
         <Button size="icon" variant="outline">
           <ArrowLeftIcon className="h-4 w-4" />
@@ -170,6 +169,6 @@ export default async function Home() {
           </CardContent>
         </Card>
       </div>
-    </main>
+    </div>
   );
 }

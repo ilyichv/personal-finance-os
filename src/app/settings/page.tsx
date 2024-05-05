@@ -14,7 +14,7 @@ export default async function Settings() {
   const categories = await api.category.getAll();
 
   return (
-    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+    <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
       <div className="flex items-center gap-4">
         <Button size="icon" variant="outline">
           <ArrowLeftIcon className="h-4 w-4" />
@@ -31,6 +31,6 @@ export default async function Settings() {
           <CreateCategory categories={categories} />
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }
