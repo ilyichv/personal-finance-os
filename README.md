@@ -15,10 +15,10 @@ Personal Finance OS is an open-source, self-hosted personal finance application 
 - [Next.js](https://nextjs.org)
 - [Vercel AI SDK](https://sdk.vercel.ai/docs/introduction)
 - [Clerk](https://clerk.com/) - migrating to [NextAuth.js](https://next-auth.js.org) soon
-- [Prisma](https://prisma.io)
 - [Drizzle](https://orm.drizzle.team)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
+- [shadcn/ui](https://ui.shadcn.com/)
 
 ### Installation
 1. Clone the repository: `git clone https://github.com/ilyichv/personal-finance-os.git`

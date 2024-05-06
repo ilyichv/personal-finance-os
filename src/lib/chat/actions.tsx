@@ -28,6 +28,12 @@ import { type Category } from "~/server/db/schema";
 import { getDate } from "~/lib/chat/utils";
 import { spinner } from "~/components/chat/spinner";
 import { api } from "~/trpc/server";
+import {
+  TransactionsOverview,
+  TransactionOverviewSkeleton,
+} from "~/components/chat/transactions-overview";
+import { TRANSACTIONS_OVERVIEW_ALLOWED_PERIODS } from "~/lib/chat/constants";
+import { generateText } from "ai";
 
 async function confirmTransactionCreation({
   name,
@@ -141,12 +147,13 @@ async function submitUserMessage(content: string) {
     system: `\
     You are a personal finance conversation bot and you can help users to track their finances.
     You and the user can discuss user's transactions and the user can create or list their transactions, in the UI.
-    
+
      Messages inside [] means that it's a UI element or a user event. For example:
     - "[User has created a transaction for Apples with amount 5 and type outcome on 2024-06-07]" means that the user has created a transaction in the UI.
-    
+
     If the user requests adding a transaction, call \`show_add_transaction_ui\` to show the transaction insert UI.
-    
+    If the user requests an overview of their transactions, call \`show_transactions_overview\` to show the transactions list UI.
+
     Besides that, you can also chat with users and do some calculations if needed.`,
     messages: [
       ...aiState.get().messages.map((message: any) => ({
@@ -223,11 +230,24 @@ async function submitUserMessage(content: string) {
             ],
           });
 
-          // todo: category guessing
+          // guessed category
+          const { text } = await generateText({
+            model: openai("gpt-3.5-turbo"),
+            // is this really necessary? isn't there a way to provide categories in a better way?
+            prompt: `Guess the category of a transaction given the name ${name} between following categories: ${aiState
+              .get()
+              .categories.map((category) => category.name)
+              .join(
+                ", ",
+              )}. Return just the name if something matches, otherwise return "".`,
+          });
+
           const matchedCategory = aiState
             .get()
             .categories.find(
-              (c) => c.name.toLowerCase() === category.toLowerCase(),
+              (c) =>
+                c.name.toLowerCase() === category.toLowerCase() ||
+                c.name.toLowerCase() === text.toLowerCase(),
             );
 
           return (
@@ -239,6 +259,67 @@ async function submitUserMessage(content: string) {
                 date={getDate(date)}
                 category={matchedCategory}
               />
+            </BotCard>
+          );
+        },
+      },
+      showTransactionsOverview: {
+        description:
+          "Get the overview of user transactions. Use this to show the overview to the user of if the user is wondering where is spending money.",
+        parameters: z.object({
+          period: z
+            .string()
+            .describe(
+              `The period to consider for the overview. Can assume ${TRANSACTIONS_OVERVIEW_ALLOWED_PERIODS.map((value) => `\`${value}\``).join(", ")} \`\` values if the period is not explicit. The maximum period is 1 month.`,
+            ),
+        }),
+        generate: async function* ({ period }) {
+          yield (
+            <BotCard>
+              <TransactionOverviewSkeleton />
+            </BotCard>
+          );
+
+          if (!TRANSACTIONS_OVERVIEW_ALLOWED_PERIODS.includes(period)) {
+            aiState.done({
+              ...aiState.get(),
+              messages: [
+                ...aiState.get().messages,
+                {
+                  id: nanoid(),
+                  role: "system",
+                  content: `[User has selected an invalid period]`,
+                },
+              ],
+            });
+
+            return (
+              <BotMessage content="Please specify a period that you want more information about. Periods greater than 1 month are not currently available." />
+            );
+          }
+
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: "function",
+                name: "showTransactionsOverview",
+                content: JSON.stringify({
+                  period,
+                }),
+              },
+            ],
+          });
+
+          const data = await api.transaction.getGroupedByCategory({
+            period,
+          });
+
+          return (
+            <BotCard>
+              <TransactionsOverview data={data} />
             </BotCard>
           );
         },
