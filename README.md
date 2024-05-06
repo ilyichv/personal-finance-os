@@ -1,29 +1,56 @@
-# Create T3 App
+# Personal Finance OS
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Personal Finance OS is an open-source, self-hosted personal finance application designed to provide individuals with a comprehensive platform to manage their finances effectively. Built on a secure and customizable architecture, Personal Finance OS offers a range of features to help users track income, expenses, investments, and financial goals seamlessly.
 
-## What's next? How do I make an app with this?
+### Features
+1. **Expense Tracking:** Easily record and categorize expenses for a clear understanding of spending patterns.
+2. **🚧 AI chat:** Directly chat with your finances to get insights and recommendations.
+3. **🚧 Budgeting:** Set up budgets for different categories and monitor spending against them.
+4. **🚧 Investment Portfolio:** Manage investments with support for stocks, bonds, cryptocurrencies, and more.
+5. **🚧 Financial Goals:** Set achievable financial goals and track progress over time.
+6. **🚧 Reports and Insights:** Generate customizable reports and visualizations for valuable insights into financial health.
+7. **🚧 Security and Privacy:** Benefit from a self-hosted architecture ensuring the privacy and security of financial data.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
-
+### Technology Used:
 - [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
+- [Vercel AI SDK](https://sdk.vercel.ai/docs/introduction)
+- [Clerk](https://clerk.com/) - migrating to [NextAuth.js](https://next-auth.js.org) soon
 - [Prisma](https://prisma.io)
 - [Drizzle](https://orm.drizzle.team)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
 
-## Learn More
+### Installation
+1. Clone the repository: `git clone https://github.com/ilyichv/personal-finance-os.git`
+2. Install dependencies using `bun`: `bun install`
+3. Copy `.env.example` to `.env.local` and update values
+   ```bash
+    cp .env.example .env.local
+    ```
+4. Run the database:
+    ```bash
+    sh start-database.sh
+    ```
+5. Run the development server: `bun dev`
+6. Access Personal Finance OS in your browser at `http://localhost:3000`
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### Self Hosting
+Guide is coming soon 🚧.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### Contributing
+We welcome contributions from the community to enhance Personal Finance OS. Whether you're a developer, designer, tester, or have ideas for new features, we value your input. Please refer to our [Contribution Guidelines](CONTRIBUTING.md) for more information.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### License
+Personal Finance OS is licensed under the MIT License. Refer to the [LICENSE](LICENSE) file for details.
 
-## How do I deploy this?
+### Support
+Encounter any issues or have questions? Please [open an issue](https://github.com/ilyichv/personal-finance-os/issues) on GitHub, and our team will be glad to assist you.
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### Acknowledgements
+We extend our gratitude to all contributors who have dedicated their time and expertise to improving Personal Finance OS.
+
+### Stay Connected
+For updates and announcements, follow me on Twitter [@ilyichdev](https://twitter.com/ilyichdev).
+
+### Disclaimer
+Personal Finance OS is provided as-is without any warranty. Users utilize it at their own discretion and risk.
