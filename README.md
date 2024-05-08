@@ -14,7 +14,7 @@ Personal Finance OS is an open-source, self-hosted personal finance application 
 ### Technology Used:
 - [Next.js](https://nextjs.org)
 - [Vercel AI SDK](https://sdk.vercel.ai/docs/introduction)
-- [Clerk](https://clerk.com/) - migrating to [NextAuth.js](https://next-auth.js.org) soon
+- [Auth.js](https://authjs.dev/)
 - [Drizzle](https://orm.drizzle.team)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
