@@ -17,6 +17,7 @@ export const transactionRouter = createTRPCRouter({
         type: input.type,
         amount: input.amount,
         categoryId: input.categoryId,
+        userId: input.userId,
         date: input.date,
       });
     }),

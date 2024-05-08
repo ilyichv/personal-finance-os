@@ -1,13 +1,12 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
   doublePrecision,
   integer,
   serial,
   timestamp,
-  varchar,
   text,
   primaryKey,
   pgTable,
@@ -78,10 +77,8 @@ export const verificationTokens = pgTable(
 
 export const categories = pgTable("category", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 256 }).notNull(),
-  createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const categoryRelations = relations(categories, ({ many }) => ({
@@ -93,21 +90,24 @@ export type Category = typeof categories.$inferSelect;
 export const transactions = pgTable("transaction", {
   id: serial("id").primaryKey(),
   date: timestamp("date").notNull(),
-  name: varchar("name", { length: 256 }).notNull(),
-  type: varchar("type", { enum: ["income", "outcome"] })
+  name: text("name").notNull(),
+  type: text("type", { enum: ["income", "outcome"] })
     .notNull()
     .default("outcome"),
   categoryId: integer("category_id"),
+  userId: text("user_id").notNull(),
   amount: doublePrecision("amount").notNull(),
-  createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const transactionRelations = relations(transactions, ({ one }) => ({
   category: one(categories, {
     fields: [transactions.categoryId],
     references: [categories.id],
+  }),
+  user: one(users, {
+    fields: [transactions.userId],
+    references: [users.id],
   }),
 }));
 

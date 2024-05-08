@@ -50,6 +50,9 @@ async function confirmTransactionCreation({
 }) {
   "use server";
 
+  const session = await auth();
+  if (!session?.user) return;
+
   const aiState = getMutableAIState<typeof AI>();
 
   const creating = createStreamableUI(
@@ -76,6 +79,7 @@ async function confirmTransactionCreation({
     amount,
     categoryId,
     date,
+    userId: session.user.id!,
   });
 
   creating.done(
@@ -253,11 +257,13 @@ async function submitUserMessage(content: string) {
           return (
             <BotCard>
               <CreateTransactionMessage
-                amount={amount}
-                type={type}
-                name={name}
-                date={getDate(date)}
-                category={matchedCategory}
+                props={{
+                  amount,
+                  type,
+                  name,
+                  date: getDate(date),
+                  category: matchedCategory,
+                }}
               />
             </BotCard>
           );
@@ -319,7 +325,7 @@ async function submitUserMessage(content: string) {
 
           return (
             <BotCard>
-              <TransactionsOverview data={data} />
+              <TransactionsOverview props={{ data }} />
             </BotCard>
           );
         },
@@ -382,7 +388,19 @@ export const getUIStateFromAIState = (aiState: Chat) => {
 
 const getDisplay = (message: Message) => {
   if (message.role === "function") {
-    return null;
+    if (message.name === "showAddTransaction")
+      return (
+        <BotCard>
+          <CreateTransactionMessage props={JSON.parse(message.content)} />
+        </BotCard>
+      );
+
+    if (message.name === "showTransactionsOverview")
+      return (
+        <BotCard>
+          <TransactionsOverview props={JSON.parse(message.content)} />
+        </BotCard>
+      );
   }
   if (message.role === "user")
     return <UserMessage>{message.content}</UserMessage>;

@@ -52,11 +52,14 @@ import {
 import { format } from "date-fns/format";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "~/components/ui/calendar";
+import { type User } from "next-auth";
 
 export function TransactionFormDialog({
   categories,
+  user,
 }: {
   categories: Category[];
+  user: User;
 }) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -71,7 +74,11 @@ export function TransactionFormDialog({
           <DialogHeader>
             <DialogTitle>Add Transaction</DialogTitle>
           </DialogHeader>
-          <TransactionForm onOpenChange={setOpen} categories={categories} />
+          <TransactionForm
+            user={user}
+            onOpenChange={setOpen}
+            categories={categories}
+          />
         </DialogContent>
       </Dialog>
     );
@@ -87,6 +94,7 @@ export function TransactionFormDialog({
           <DrawerTitle>Add Transaction</DrawerTitle>
         </DrawerHeader>
         <TransactionForm
+          user={user}
           onOpenChange={setOpen}
           className="px-4"
           categories={categories}
@@ -105,9 +113,11 @@ function TransactionForm({
   className,
   categories,
   onOpenChange,
+  user,
 }: React.ComponentProps<"form"> & {
   categories: Category[];
   onOpenChange: (open: boolean) => void;
+  user: User;
 }) {
   const router = useRouter();
   const form = useForm<z.infer<typeof transactionInsertSchema>>({
@@ -115,6 +125,7 @@ function TransactionForm({
     defaultValues: {
       type: "outcome",
       date: new Date(),
+      userId: user.id,
     },
   });
 
@@ -250,7 +261,6 @@ function TransactionForm({
             )}
             name="categoryId"
           />
-
           <FormField
             control={form.control}
             render={({ field }) => (

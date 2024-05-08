@@ -3,9 +3,11 @@
 import { ResponsiveBar } from "@nivo/bar";
 
 export function TransactionsOverview({
-  data,
+  props: { data },
 }: {
-  data: { id: number | null; total: number; name: string | null }[];
+  props: {
+    data: { id: number | null; total: number; name: string | null }[];
+  };
 }) {
   return (
     <div className="aspect-[16/9]">

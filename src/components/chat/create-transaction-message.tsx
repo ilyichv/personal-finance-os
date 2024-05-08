@@ -8,17 +8,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function CreateTransactionMessage({
-  amount,
-  type,
-  name,
-  date,
-  category,
+  props: { amount, type, name, date, category },
 }: {
-  amount: Transaction["amount"];
-  type: Transaction["type"];
-  name: Transaction["name"];
-  date: Transaction["date"];
-  category: Category | undefined;
+  props: {
+    amount: Transaction["amount"];
+    type: Transaction["type"];
+    name: Transaction["name"];
+    date: Transaction["date"];
+    category: Category | undefined;
+  };
 }) {
   const router = useRouter();
   const { confirmTransactionCreation } = useActions();

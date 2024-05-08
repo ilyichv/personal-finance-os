@@ -22,7 +22,7 @@ Personal Finance OS is an open-source, self-hosted personal finance application 
 
 ### Installation
 1. Clone the repository: `git clone https://github.com/ilyichv/personal-finance-os.git`
-2. Install dependencies using `bun`: `bun install`
+2. Install dependencies using `pnpm`: `pnpm install`
 3. Copy `.env.example` to `.env.local` and update values
    ```bash
     cp .env.example .env.local
@@ -31,7 +31,7 @@ Personal Finance OS is an open-source, self-hosted personal finance application 
     ```bash
     sh start-database.sh
     ```
-5. Run the development server: `bun dev`
+5. Run the development server: `pnpm dev`
 6. Access Personal Finance OS in your browser at `http://localhost:3000`
 
 ### Self Hosting
