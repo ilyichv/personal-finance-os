@@ -3,10 +3,7 @@ import "~/styles/globals.css";
 import { Inter } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
-import { ClerkProvider } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
-import { Sidebar } from "~/components/common/sidebar";
-import { Header } from "~/components/common/header";
 import { Toaster } from "~/components/ui/sonner";
 
 const inter = Inter({
@@ -26,21 +23,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={cn("font-sans", inter.variable)}>
-          <TRPCReactProvider>
-            <main className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
-              <Sidebar />
-              <div className="flex min-h-screen flex-col">
-                <Header />
-                {children}
-              </div>
-            </main>
-          </TRPCReactProvider>
-          <Toaster />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={cn("font-sans", inter.variable)}>
+        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <Toaster />
+      </body>
+    </html>
   );
 }

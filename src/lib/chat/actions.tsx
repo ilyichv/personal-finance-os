@@ -9,7 +9,6 @@ import {
   streamUI,
 } from "ai/rsc";
 import { nanoid } from "~/lib/utils";
-import { auth } from "@clerk/nextjs";
 import { type Chat } from "~/lib/types";
 import {
   BotCard,
@@ -34,6 +33,7 @@ import {
 } from "~/components/chat/transactions-overview";
 import { TRANSACTIONS_OVERVIEW_ALLOWED_PERIODS } from "~/lib/chat/constants";
 import { generateText } from "ai";
+import { auth } from "~/auth";
 
 async function confirmTransactionCreation({
   name,
@@ -360,8 +360,8 @@ export const AI = createAI<AIState, UIState>({
   onGetUIState: async () => {
     "use server";
 
-    const { userId } = auth();
-    if (userId) {
+    const session = await auth();
+    if (session) {
       const aiState = getAIState();
 
       if (aiState) {
